@@ -26,6 +26,9 @@ app.use(express.static("build"));
 app.use((req, res) => {
   res.sendFile(path.resolve("build/index.html"));
 });
+app.get("/ping", (req, res) => {
+  res.send("pong");
+});
 
 const PORT = process.env.PORT || 5000;
 
