@@ -20,3 +20,8 @@ app.use("/api/projects", require("./routes/projects"));
 app.use("/api/users", require("./routes/users"));
 
 app.listen(5000, () => console.log("Server running on port 5000"));
+app.use(express.static(path.join(__dirname, "../client/build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build/index.html"));
+});
