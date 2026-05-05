@@ -29,8 +29,8 @@ app.get("/ping", (req, res) => {
 // Serve frontend
 app.use(express.static(path.join(__dirname, "build")));
 
-// ✅ FIXED LINE HERE
-app.get("*", (req, res) => {
+// ✅ FINAL SAFE FALLBACK (NO WILDCARD)
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
