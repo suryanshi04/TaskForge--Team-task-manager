@@ -20,11 +20,11 @@ app.use("/api/tasks", require("./routes/tasks"));
 app.use("/api/projects", require("./routes/projects"));
 app.use("/api/users", require("./routes/users"));
 
-// ✅ FIXED PATH
-app.use(express.static(path.join(__dirname, "build")));
+// Serve frontend
+app.use(express.static("build"));
 
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, "build/index.html"));
+  res.sendFile(path.resolve("build/index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
