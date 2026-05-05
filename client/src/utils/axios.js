@@ -1,9 +1,10 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://taskforge-team-task-manager-production-646e.up.railway.app/api"
+  baseURL: "/api" // 🔥 IMPORTANT
 });
 
+export default api;
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
