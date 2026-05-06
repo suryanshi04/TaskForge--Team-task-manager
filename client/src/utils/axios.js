@@ -4,7 +4,6 @@ const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "/api"
 });
 
-// attach token automatically
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
