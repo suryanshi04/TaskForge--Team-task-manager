@@ -48,7 +48,7 @@ export default function Dashboard() {
 
   const createProject = async () => {
     try {
-      await api.post("/api/projects", {
+      await api.post("/projects", {
         name: projectName,
         members: []
       });
@@ -56,7 +56,7 @@ export default function Dashboard() {
       setProjectName("");
 
       // refresh projects
-      const res = await api.get("/api/projects");
+      const res = await api.get("/projects");
       setProjects(res.data);
     } catch {
       alert("Error creating project");
@@ -65,7 +65,7 @@ export default function Dashboard() {
 
   const createTask = async () => {
     try {
-      await api.post("/api/tasks", {
+      await api.post("/tasks", {
         title,
         dueDate,
         assignedTo,
@@ -78,7 +78,7 @@ export default function Dashboard() {
       setProjectId("");
 
       // refresh tasks
-      const res = await api.get("/api/tasks");
+      const res = await api.get("/tasks");
       setTasks(res.data);
     } catch {
       alert("Error creating task");
@@ -89,9 +89,9 @@ export default function Dashboard() {
 
   const updateStatus = async (id, status) => {
     try {
-      await api.put(`/api/tasks/${id}`, { status });
+      await api.put(`/tasks/${id}`, { status });
 
-      const res = await api.get("/api/tasks");
+      const res = await api.get("/tasks");
       setTasks(res.data);
     } catch {
       alert("Not allowed or error updating");

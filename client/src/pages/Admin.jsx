@@ -11,7 +11,7 @@ export default function Admin() {
 
   // ✅ memoized function
   const fetchUsers = useCallback(() => {
-    api.get("/api/users")
+    api.get("/users")
       .then(res => setUsers(res.data))
       .catch(() => alert("Error fetching users"));
   }, []);
@@ -29,7 +29,7 @@ export default function Admin() {
 
   const updateRole = async (id, role) => {
     try {
-      await api.put(`/api/users/${id}/role`, { role });
+      await api.put(`/users/${id}/role`, { role });
       fetchUsers(); // refresh
     } catch {
       alert("Error updating role");
