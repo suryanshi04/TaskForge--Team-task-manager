@@ -2,7 +2,6 @@ import { useState } from "react";
 import api from "../utils/axios";
 import { useNavigate, Link } from "react-router-dom";
 
-
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,35 +10,25 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       const res = await api.post("/auth/login", { email, password });
+
+      console.log("LOGIN RESPONSE:", res.data);
+
       localStorage.setItem("token", res.data.token);
+
+      console.log("TOKEN AFTER SAVE:", localStorage.getItem("token"));
+
       navigate("/dashboard");
-    } catch {
+    } catch (err) {
+      console.error(err);
       alert("Invalid credentials");
     }
   };
-  const handleLogin = async () => {
-  try {
-    const res = await api.post("/auth/login", { email, password });
-
-    console.log("LOGIN RESPONSE:", res.data); // 👈 ADD THIS
-
-    localStorage.setItem("token", res.data.token);
-
-    console.log("TOKEN AFTER SAVE:", localStorage.getItem("token")); // 👈 ADD
-
-    navigate("/dashboard");
-  } catch (err) {
-    console.error(err);
-    alert("Invalid credentials");
-  }
-};
 
   return (
     <div className="min-h-screen flex">
 
       {/* LEFT SIDE */}
       <div className="w-1/2 bg-gradient-to-br from-blue-600 to-indigo-700 flex flex-col items-center justify-center text-center p-10">
-        
         <h1 className="text-white text-5xl font-bold tracking-wide animate-pulse">
           TaskForge
         </h1>
@@ -47,12 +36,10 @@ export default function Login() {
         <p className="text-blue-100 mt-4 text-lg max-w-md opacity-90">
           Manage your tasks, collaborate with your team, and stay productive.
         </p>
-
       </div>
 
       {/* RIGHT SIDE */}
       <div className="w-1/2 flex items-center justify-center bg-gray-100">
-        
         <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md 
                         transform transition duration-500 hover:shadow-xl hover:-translate-y-1
                         animate-[fadeIn_0.6s_ease-in-out]">
@@ -95,7 +82,6 @@ export default function Login() {
         </div>
       </div>
 
-      {/*  Custom animation */}
       <style>
         {`
           @keyframes fadeIn {

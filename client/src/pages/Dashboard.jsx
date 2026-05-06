@@ -15,34 +15,35 @@ export default function Dashboard() {
   const [projectId, setProjectId] = useState("");
   const [projectName, setProjectName] = useState("");
 
-  // 🔐 Decode user
+  // 🔐 Decode user safely
   const token = localStorage.getItem("token");
 
-let currentUser = null;
+  let currentUser = null;
 
-if (token && token.includes(".")) {
-  try {
-    currentUser = jwtDecode(token);
-  } catch (err) {
-    console.error("Invalid token");
+  if (token && token.includes(".")) {
+    try {
+      currentUser = jwtDecode(token);
+    } catch (err) {
+      console.error("Invalid token");
+    }
   }
-}
 
   // ================= FETCH =================
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const tasksRes = await api.get("/api/tasks");
-        const projectsRes = await api.get("/api/projects");
+        const tasksRes = await api.get("/tasks");
+        const projectsRes = await api.get("/projects");
 
         setTasks(tasksRes.data);
         setProjects(projectsRes.data);
 
-        // Only admin fetch users
-        if (user?.role === "admin") {
-          const usersRes = await api.get("/api/users");
+        // Admin → fetch users
+        if (currentUser?.role === "admin") {
+          const usersRes = await api.get("/users");
           setUsers(usersRes.data);
         }
+
       } catch (err) {
         console.log("Fetch error:", err.response?.status);
       } finally {
@@ -51,7 +52,7 @@ if (token && token.includes(".")) {
     };
 
     fetchData();
-  }, [user]);
+  }, [currentUser]);
 
   // ================= CREATE =================
 
@@ -64,7 +65,6 @@ if (token && token.includes(".")) {
 
       setProjectName("");
 
-      // refresh projects
       const res = await api.get("/projects");
       setProjects(res.data);
     } catch {
@@ -86,7 +86,6 @@ if (token && token.includes(".")) {
       setAssignedTo("");
       setProjectId("");
 
-      // refresh tasks
       const res = await api.get("/tasks");
       setTasks(res.data);
     } catch {
@@ -151,8 +150,8 @@ if (token && token.includes(".")) {
           </div>
         </div>
 
-        {/* ADMIN */}
-        {user?.role === "admin" && (
+        {/* ADMIN PANEL */}
+        {currentUser?.role === "admin" && (
           <div className="grid md:grid-cols-2 gap-6 mb-6">
 
             {/* CREATE PROJECT */}
@@ -228,7 +227,7 @@ if (token && token.includes(".")) {
           </div>
         )}
 
-        {/* TASKS */}
+        {/* TASK LIST */}
         <div className="grid md:grid-cols-3 gap-4">
           {tasks.map(task => (
             <div
@@ -257,8 +256,8 @@ if (token && token.includes(".")) {
                 Project: {task.projectId?.name || "None"}
               </p>
 
-              {(user?.role === "admin" ||
-                task.assignedTo?._id === user?.id) && (
+              {(currentUser?.role === "admin" ||
+                task.assignedTo?._id === currentUser?.id) && (
                 <div className="flex gap-2">
                   <button
                     className="px-2 py-1 bg-gray-200 rounded text-xs"
