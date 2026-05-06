@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api from "../utils/axios";
 import Layout from "../components/Layout";
 import { jwtDecode } from "jwt-decode";
@@ -9,20 +9,20 @@ export default function Admin() {
   const token = localStorage.getItem("token");
   const currentUser = token ? jwtDecode(token) : null;
 
-  const fetchUsers = () => {
+  // ✅ memoized function
+  const fetchUsers = useCallback(() => {
     api.get("/api/users")
       .then(res => setUsers(res.data))
       .catch(() => alert("Error fetching users"));
-  };
+  }, []);
 
-  //  ALWAYS call hooks first
+  // ✅ fixed dependency
   useEffect(() => {
     if (currentUser?.role === "admin") {
       fetchUsers();
     }
-  }, []);
+  }, [currentUser, fetchUsers]);
 
-  // AFTER hooks → condition
   if (currentUser?.role !== "admin") {
     return <p className="p-6 text-red-500 font-semibold">Access Denied</p>;
   }
@@ -30,7 +30,7 @@ export default function Admin() {
   const updateRole = async (id, role) => {
     try {
       await api.put(`/api/users/${id}/role`, { role });
-      fetchUsers();
+      fetchUsers(); // refresh
     } catch {
       alert("Error updating role");
     }

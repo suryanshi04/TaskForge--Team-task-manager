@@ -20,49 +20,29 @@ export default function Dashboard() {
   const user = token ? jwtDecode(token) : null;
 
   // ================= FETCH =================
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const tasksRes = await api.get("/api/tasks");
+        const projectsRes = await api.get("/api/projects");
 
-  const fetchTasks = () => {
-    api.get("/api/tasks")
-      .then(res => setTasks(res.data))
-      .catch((err) => console.log("Tasks error:", err.response?.status));
-  };
+        setTasks(tasksRes.data);
+        setProjects(projectsRes.data);
 
-  const fetchUsers = () => {
-    api.get("/api/users")
-      .then(res => setUsers(res.data))
-      .catch((err) => console.log("Tasks error:", err.response?.status));
-  };
-
-  const fetchProjects = () => {
-    api.get("/api/projects")
-      .then(res => setProjects(res.data))
-      .catch((err) => console.log("Tasks error:", err.response?.status));
-  };
-
- useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const tasksRes = await api.get("/api/tasks");
-      const projectsRes = await api.get("/api/projects");
-
-      setTasks(tasksRes.data);
-      setProjects(projectsRes.data);
-
-      // ONLY ADMIN CAN FETCH USERS
-      if (user?.role === "admin") {
-        const usersRes = await api.get("/api/users");
-        setUsers(usersRes.data);
+        // Only admin fetch users
+        if (user?.role === "admin") {
+          const usersRes = await api.get("/api/users");
+          setUsers(usersRes.data);
+        }
+      } catch (err) {
+        console.log("Fetch error:", err.response?.status);
+      } finally {
+        setLoading(false);
       }
+    };
 
-    } catch (err) {
-      console.log("Fetch error:", err.response?.status);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchData();
-}, []);
+    fetchData();
+  }, [user]);
 
   // ================= CREATE =================
 
@@ -74,7 +54,10 @@ export default function Dashboard() {
       });
 
       setProjectName("");
-      fetchProjects();
+
+      // refresh projects
+      const res = await api.get("/api/projects");
+      setProjects(res.data);
     } catch {
       alert("Error creating project");
     }
@@ -93,7 +76,10 @@ export default function Dashboard() {
       setDueDate("");
       setAssignedTo("");
       setProjectId("");
-      fetchTasks();
+
+      // refresh tasks
+      const res = await api.get("/api/tasks");
+      setTasks(res.data);
     } catch {
       alert("Error creating task");
     }
@@ -104,7 +90,9 @@ export default function Dashboard() {
   const updateStatus = async (id, status) => {
     try {
       await api.put(`/api/tasks/${id}`, { status });
-      fetchTasks();
+
+      const res = await api.get("/api/tasks");
+      setTasks(res.data);
     } catch {
       alert("Not allowed or error updating");
     }
@@ -123,16 +111,17 @@ export default function Dashboard() {
   const total = tasks.length;
   const completed = tasks.filter(t => t.status === "done").length;
   const overdue = tasks.filter(isOverdue).length;
-if (loading) {
-  return <p className="p-6">Loading...</p>;
-}
+
+  if (loading) {
+    return <p className="p-6">Loading...</p>;
+  }
+
   // ================= UI =================
 
   return (
     <Layout>
       <div className="p-2">
 
-        {/* HEADER */}
         <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
 
         {/* STATS */}
@@ -153,7 +142,7 @@ if (loading) {
           </div>
         </div>
 
-        {/* ADMIN CONTROLS */}
+        {/* ADMIN */}
         {user?.role === "admin" && (
           <div className="grid md:grid-cols-2 gap-6 mb-6">
 
@@ -230,7 +219,7 @@ if (loading) {
           </div>
         )}
 
-        {/* TASK LIST */}
+        {/* TASKS */}
         <div className="grid md:grid-cols-3 gap-4">
           {tasks.map(task => (
             <div
