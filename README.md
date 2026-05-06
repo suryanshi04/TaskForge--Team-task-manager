@@ -1,4 +1,4 @@
-TaskForge – Team Task Management System
+## TaskForge – Team Task Management System
 
 TaskForge is a full-stack MERN application designed to help teams manage projects, assign tasks, track progress, and collaborate efficiently in one centralized dashboard.
 
