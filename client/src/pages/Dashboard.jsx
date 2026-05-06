@@ -17,7 +17,16 @@ export default function Dashboard() {
 
   // 🔐 Decode user
   const token = localStorage.getItem("token");
-  const user = token ? jwtDecode(token) : null;
+
+let currentUser = null;
+
+if (token && token.includes(".")) {
+  try {
+    currentUser = jwtDecode(token);
+  } catch (err) {
+    console.error("Invalid token");
+  }
+}
 
   // ================= FETCH =================
   useEffect(() => {

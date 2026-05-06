@@ -10,13 +10,29 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const res = await api.post("/api/auth/login", { email, password });
+      const res = await api.post("/auth/login", { email, password });
       localStorage.setItem("token", res.data.token);
       navigate("/dashboard");
     } catch {
       alert("Invalid credentials");
     }
   };
+  const handleLogin = async () => {
+  try {
+    const res = await api.post("/auth/login", { email, password });
+
+    console.log("LOGIN RESPONSE:", res.data); // 👈 ADD THIS
+
+    localStorage.setItem("token", res.data.token);
+
+    console.log("TOKEN AFTER SAVE:", localStorage.getItem("token")); // 👈 ADD
+
+    navigate("/dashboard");
+  } catch (err) {
+    console.error(err);
+    alert("Invalid credentials");
+  }
+};
 
   return (
     <div className="min-h-screen flex">
